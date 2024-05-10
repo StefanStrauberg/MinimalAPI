@@ -45,4 +45,18 @@ app.MapDelete("/todoitems/{id}", async (int id, TodoDb db) =>
     return Results.NotFound();
 });
 
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+var logger = services.GetRequiredService<ILogger<Program>>();
+
+try
+{
+    DbInitializer.Seed(services);
+    logger.LogInformation("The InMemory DB was seeded with fake data.");
+}
+catch (Exception ex)
+{
+    logger.LogError(ex, "An error occurred initializing the DB.");
+}
+
 app.Run();
